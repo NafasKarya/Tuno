@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.tuno_appsmusic.features.splash.pages.SplashPage
 import com.tuno_appsmusic.features.onboarding.pages.OnboardingPage
+import com.tuno_appsmusic.features.auth.presentation.pages.LoginPage // ✅ Tambahkan ini
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +28,9 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("onboarding") {
                         OnboardingPage(navController)
+                    }
+                    composable("login") { // ✅ Tambahkan route ini
+                        LoginPage(navController)
                     }
                 }
             }

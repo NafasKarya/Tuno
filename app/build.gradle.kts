@@ -55,6 +55,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
     implementation("androidx.window:window:1.2.0")
+    implementation(libs.androidx.media3.common.ktx)
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     // Navigation Compose
@@ -71,6 +72,14 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation("androidx.media3:media3-exoplayer:1.3.1")
+    implementation("androidx.media3:media3-ui:1.3.1")
+    implementation("com.google.accompanist:accompanist-webview:0.32.0")
+    implementation ("androidx.compose.material:material-icons-extended")
+
+
+
+
 
 
     // Testing
