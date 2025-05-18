@@ -2,25 +2,37 @@ package com.tuno_appsmusic.features.onboarding.presentation.widgets
 
 import ScreenUtils
 import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun OnboardingIndicator() {
-    Row(horizontalArrangement = Arrangement.Center) {
-        repeat(3) {
-            val isActive = it == 1
+fun OnboardingIndicator(
+    total: Int = 3,
+    activeIndex: Int = 1 // indeks yang aktif, default di tengah (0,1,2)
+) {
+    val activeColor = Color(0xFF6DFF8A)
+    val inactiveColor = Color.White
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        repeat(total) { index ->
+            val isActive = index == activeIndex
             Box(
                 modifier = Modifier
-                    .padding(horizontal = ScreenUtils.scaleDp(3.dp))
-                    .height(ScreenUtils.scaleDp(6.dp))
-                    .width(if (isActive) ScreenUtils.scaleDp(18.dp) else ScreenUtils.scaleDp(6.dp))
+                    .padding(horizontal = 12.dp)
+                    .height(4.dp)
+                    .width(if (isActive) 44.dp else 32.dp)
                     .background(
-                        color = if (isActive) Color.White else Color.LightGray,
+                        color = if (isActive) activeColor else inactiveColor,
                         shape = RoundedCornerShape(50)
                     )
             )

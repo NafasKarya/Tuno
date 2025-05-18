@@ -2,18 +2,20 @@ package com.tuno_appsmusic.features.auth.presentation.widgets
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.*
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.tuno_appsmusic.R
-import ScreenUtils
-import androidx.compose.ui.unit.sp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginFormSection(
     email: String,
@@ -23,55 +25,77 @@ fun LoginFormSection(
     onPasswordChange: (String) -> Unit,
     onTogglePasswordVisibility: () -> Unit
 ) {
-    // ✅ Field Email
-    TextField(
-        value = email,
-        onValueChange = onEmailChange,
-        placeholder = { Text("Email address", color = Color.Gray) },
-        singleLine = true,
-        shape = RoundedCornerShape(12.dp),
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.DarkGray,
-            cursorColor = Color.White,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        ),
-        textStyle = LocalTextStyle.current.copy(color = Color.White),
-        modifier = Modifier.fillMaxWidth()
-    )
+    val softBorder = Color(0xFFE0E0E0)
+    val focusedBorder = Color(0xFFBDBDBD)
+    val labelColor = Color(0xFF757575)
+    val iconColor = Color(0xFF9E9E9E)
+    val background = Color.White
 
-    Spacer(modifier = Modifier.height(ScreenUtils.scaleDp(12.dp)))
-
-    // ✅ Field Password
-    TextField(
-        value = password,
-        onValueChange = onPasswordChange,
-        placeholder = { Text("Password", color = Color.Gray) },
-        singleLine = true,
-        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        trailingIcon = {
-            IconButton(onClick = onTogglePasswordVisibility) {
-                val iconRes = if (passwordVisible) R.drawable.ic_visibility_off else R.drawable.ic_visibility_on
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        OutlinedTextField(
+            value = email,
+            onValueChange = onEmailChange,
+            label = { Text("Phone/Email Id", color = labelColor) },
+            leadingIcon = {
                 Icon(
-                    painter = painterResource(id = iconRes),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
+                    imageVector = Icons.Default.Email,
+                    contentDescription = "Email Icon",
+                    tint = iconColor
                 )
-            }
-        },
-        shape = RoundedCornerShape(12.dp),
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.DarkGray,
-            cursorColor = Color.White,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        ),
-        textStyle = LocalTextStyle.current.copy(
-            color = Color.White,
-            letterSpacing = 1.5.sp
-        ),
-        modifier = Modifier.fillMaxWidth()
-    )
+            },
+            shape = RoundedCornerShape(28.dp),
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = softBorder,
+                focusedBorderColor = focusedBorder,
+                unfocusedContainerColor = background,
+                focusedContainerColor = background,
+                cursorColor = focusedBorder,
+                focusedLabelColor = labelColor,
+                unfocusedLabelColor = labelColor
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        )
+        OutlinedTextField(
+            value = password,
+            onValueChange = onPasswordChange,
+            label = { Text("Password", color = labelColor) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = "Password Icon",
+                    tint = iconColor
+                )
+            },
+            trailingIcon = {
+                val icon = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility
+                IconButton(onClick = onTogglePasswordVisibility) {
+                    Icon(
+                        icon,
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password",
+                        tint = iconColor
+                    )
+                }
+            },
+            shape = RoundedCornerShape(28.dp),
+            singleLine = true,
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = softBorder,
+                focusedBorderColor = focusedBorder,
+                unfocusedContainerColor = background,
+                focusedContainerColor = background,
+                cursorColor = focusedBorder,
+                focusedLabelColor = labelColor,
+                unfocusedLabelColor = labelColor
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        )
+    }
 }
-
