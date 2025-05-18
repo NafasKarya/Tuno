@@ -1,11 +1,10 @@
 package com.tuno_appsmusic.features.auth.presentation.pages
 
 import ScreenUtils
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,11 +17,9 @@ import androidx.navigation.NavController
 import com.tuno_appsmusic.shared.utils.rememberWindowInfo
 import com.tuno_appsmusic.features.auth.presentation.widgets.*
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun LoginPage(navController: NavController) {
     val windowInfo = rememberWindowInfo()
-
     val titleFontSize = ScreenUtils.scaleFontSize(
         when (windowInfo.widthSizeClass) {
             WindowWidthSizeClass.Compact -> 20f
@@ -31,7 +28,6 @@ fun LoginPage(navController: NavController) {
             else -> 20f
         }
     )
-
     val bodyFontSize = ScreenUtils.scaleFontSize(titleFontSize.value * 0.75f)
     val smallFontSize = ScreenUtils.scaleFontSize(titleFontSize.value * 0.55f)
 
@@ -49,90 +45,32 @@ fun LoginPage(navController: NavController) {
             .padding(ScreenUtils.scaleDp(24.dp))
     ) {
         val content = @Composable {
-            Column(
-                modifier = layoutModifier,
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Login", fontSize = titleFontSize, fontWeight = FontWeight.Bold, color = Color.White)
-
-                Spacer(modifier = Modifier.height(ScreenUtils.scaleDp(4.dp)))
-
-                Row {
-                    Text("Don't have an account? ", color = Color.Gray, fontSize = bodyFontSize)
-                    Text(
-                        "Sign up",
-                        color = Color(0xFFCCFF00),
-                        fontSize = bodyFontSize,
-                        modifier = Modifier.clickable {
-                            navController.navigate("register")
-                        }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(ScreenUtils.scaleDp(24.dp)))
-
-                LoginFormSection(
-                    email = email,
-                    password = password,
-                    passwordVisible = passwordVisible,
-                    onEmailChange = { email = it },
-                    onPasswordChange = { password = it },
-                    onTogglePasswordVisibility = { passwordVisible = !passwordVisible }
-                )
-
-                Spacer(modifier = Modifier.height(ScreenUtils.scaleDp(24.dp)))
-
-                LoginButtonSection(fontSize = bodyFontSize)
-
-                Spacer(modifier = Modifier.height(ScreenUtils.scaleDp(24.dp)))
-
-                Divider(color = Color.Gray.copy(alpha = 0.3f))
-
-                Spacer(modifier = Modifier.height(ScreenUtils.scaleDp(12.dp)))
-
-                Text("or sign up with", color = Color.Gray, fontSize = bodyFontSize)
-
-                Spacer(modifier = Modifier.height(ScreenUtils.scaleDp(12.dp)))
-
-                SignWithSection()
-
-                Spacer(modifier = Modifier.height(ScreenUtils.scaleDp(24.dp)))
-
-                Text(
-                    text = "By clicking continue you agree to recognotes",
-                    fontSize = smallFontSize,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text("Terms of use", color = Color(0xFFCCFF00), fontSize = smallFontSize)
-                    Text(" and ", color = Color.Gray, fontSize = smallFontSize)
-                    Text("Privacy policy", color = Color(0xFFCCFF00), fontSize = smallFontSize)
-                }
-            }
+            LoginContent(
+                email = email,
+                password = password,
+                passwordVisible = passwordVisible,
+                onEmailChange = { email = it },
+                onPasswordChange = { password = it },
+                onTogglePasswordVisibility = { passwordVisible = !passwordVisible },
+                navController = navController,
+                titleFontSize = titleFontSize,
+                bodyFontSize = bodyFontSize,
+                smallFontSize = smallFontSize,
+                layoutModifier = layoutModifier
+            )
         }
-
         if (isWide) {
             Row(
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
-            ) {
-                content()
-            }
+            ) { content() }
         } else {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                content()
-            }
+            ) { content() }
         }
     }
 }
