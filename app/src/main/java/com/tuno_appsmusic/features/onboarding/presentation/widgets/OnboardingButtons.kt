@@ -15,7 +15,7 @@ import androidx.navigation.NavController
 fun OnboardingButtons(navController: NavController) {
     OutlinedButton(
         onClick = {
-            navController.navigate("login") // Ganti dengan route ke halaman login-mu
+            navController.navigate("login")
         },
         modifier = Modifier
             .fillMaxWidth()
@@ -34,7 +34,7 @@ fun OnboardingButtons(navController: NavController) {
 
     Button(
         onClick = {
-            navController.navigate("home") {
+            navController.navigate("homePages") {
                 popUpTo("onboarding") { inclusive = true }
             }
         },
