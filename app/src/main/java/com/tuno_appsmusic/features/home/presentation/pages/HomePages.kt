@@ -3,9 +3,13 @@ package com.tuno_appsmusic.features.home.presentation.pages
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -13,71 +17,136 @@ import androidx.navigation.NavController
 import com.tuno_appsmusic.R
 import com.tuno_appsmusic.features.home.presentation.widgets.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomePages(navController: NavController) {
-    // Daftar genre
     val genres = listOf("All", "Pop", "Rock", "Indie", "R&B", "Jazz", "Dangdut", "Electronic")
-
-    // State untuk genre yang dipilih
     var selectedGenre by remember { mutableStateOf("All") }
-
-    // Data album cards (pakai asset drawable)
     val albumCards = listOf(
         AlbumCard(R.drawable.profile, "Hindia - Evaluasi"),
         AlbumCard(R.drawable.profile, "Nadin Amizah"),
         AlbumCard(R.drawable.profile, "Feby Putri"),
         AlbumCard(R.drawable.profile, "Payung Teduh")
     )
-
     var isLoading by remember { mutableStateOf(true) }
 
-    // Jalankan shimmer selama 1 detik saat pertama kali load
+    // BOTTOM SHEET SCAFFOLD (Material 2)
+    val sheetState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberBottomSheetState(
+            initialValue = BottomSheetValue.Collapsed
+        )
+    )
+    val coroutineScope = rememberCoroutineScope()
+    var showSheet by remember { mutableStateOf(false) }
+
+    // Simulasi loading
     LaunchedEffect(Unit) {
         delay(1000)
         isLoading = false
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF0B0A0A),
-                        Color(0xFF211F1F)
+    // Buka/tutup sheet dari trigger long press
+    LaunchedEffect(showSheet) {
+        coroutineScope.launch {
+            if (showSheet) {
+                sheetState.bottomSheetState.expand()
+            } else {
+                sheetState.bottomSheetState.collapse()
+            }
+        }
+    }
+
+    // Reset showSheet jika sheet ditutup (drag)
+    LaunchedEffect(sheetState.bottomSheetState.isCollapsed) {
+        if (sheetState.bottomSheetState.isCollapsed) {
+            showSheet = false
+        }
+    }
+
+    BottomSheetScaffold(
+        scaffoldState = sheetState,
+        sheetContent = {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = Color(0xFF181818),
+                        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
                     )
+                    .padding(24.dp)
+            ) {
+                ForYouMiniSongSheet(
+                    coverRes = R.drawable.profile,
+                    songTitle = "Hindia - Rumah ke Rumah",
+                    artist = "Hindia",
+                    modifier = Modifier.fillMaxWidth()
                 )
-            )
+            }
+        },
+        sheetPeekHeight = 0.dp,
+        sheetShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+        sheetBackgroundColor = Color(0xFF181818),
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(bottom = 24.dp)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF0B0A0A),
+                            Color(0xFF211F1F)
+                        )
+                    )
+                )
         ) {
-            // Header profil
-            HomeHeader(
-                profileImageRes = R.drawable.profile
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            GenreFilterBar(
-                genres = genres,
-                selectedGenre = selectedGenre,
-                onGenreSelected = { selectedGenre = it }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            AlbumCardGrid(albumCards = albumCards)
-            Spacer(modifier = Modifier.height(36.dp))
+            // KONTEN UTAMA
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(
+                        rememberScrollState(),
+                        enabled = sheetState.bottomSheetState.isCollapsed // Nonaktifkan scroll jika sheet buka
+                    )
+                    .padding(bottom = 24.dp)
+            ) {
+                HomeHeader(profileImageRes = R.drawable.profile)
+                Spacer(modifier = Modifier.height(12.dp))
+                GenreFilterBar(
+                    genres = genres,
+                    selectedGenre = selectedGenre,
+                    onGenreSelected = { selectedGenre = it }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                AlbumCardGrid(albumCards = albumCards)
+                Spacer(modifier = Modifier.height(36.dp))
+                MoodSeninPlaylistSection(isLoading = isLoading)
+                Spacer(modifier = Modifier.height(32.dp))
+                ForYouTitle()
+                ForYouBigCardContent(
+                    isLoading = isLoading,
+                    title = "Hindia - Rumah ke Rumah",
+                    artistName = "Hindia",
+                    artistDesc = "...",
+                    artistAvatar = R.drawable.profile,
+                    expanded = false,
+                    onExpandToggle = { },
+                    onMoreClick = { },
+                    onImageLongPress = { showSheet = true },
+                    modifier = Modifier
+                )
+                Spacer(modifier = Modifier.height(28.dp))
+            }
 
-            // Playlist Mood Senin
-            MoodSeninPlaylistSection(isLoading = isLoading)
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Title & Big Card dipisah jadi widget!
-            ForYouTitle()
-            ForYouBigCardWithMiniSheet(isLoading = isLoading)
-            Spacer(modifier = Modifier.height(28.dp))
+            // OVERLAY TRANSPARENT, AGAR AREA DI LUAR SHEET TIDAK BISA DIINTERAKSI SAAT SHEET TERBUKA
+            if (!sheetState.bottomSheetState.isCollapsed) {
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .background(Color.Transparent)
+                )
+            }
         }
     }
 }

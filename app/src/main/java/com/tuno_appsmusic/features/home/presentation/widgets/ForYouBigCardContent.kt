@@ -1,17 +1,20 @@
 package com.tuno_appsmusic.features.home.presentation.widgets
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.*
@@ -19,10 +22,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.tuno_appsmusic.R
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.clickable
+
 
 @Composable
 fun ForYouBigCardContent(
@@ -32,21 +38,49 @@ fun ForYouBigCardContent(
     artistDesc: String,
     artistAvatar: Int,
     expanded: Boolean,
-    onMoreClick: () -> Unit, // << Tambahkan ini!
+    onMoreClick: () -> Unit,
     onExpandToggle: () -> Unit,
+    onImageLongPress: () -> Unit, // <-- Trigger sheet
     modifier: Modifier = Modifier
 ) {
+    // State animasi scale
+    var isPressed by remember { mutableStateOf(false) }
+    val scaleAnim by animateFloatAsState(
+        targetValue = if (isPressed) 0.96f else 1f,
+        label = "longPressCardScale"
+    )
+
     Box(
         modifier = modifier
             .padding(horizontal = 18.dp)
             .fillMaxWidth()
-            .let {
-                if (expanded) it else it.aspectRatio(1.2f)
-            }
+            .let { if (expanded) it else it.aspectRatio(1.2f) }
             .clip(RoundedCornerShape(24.dp))
             .background(Color(0xFF181818))
+            .scale(scaleAnim) // <-- Card scale effect
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onLongPress = {
+                        isPressed = true
+                        onImageLongPress()
+                        // balikin animasi abis sheet muncul (delay opsional)
+                        kotlinx.coroutines.GlobalScope.launch {
+                            kotlinx.coroutines.delay(120)
+                            isPressed = false
+                        }
+                    },
+                    onPress = {
+                        isPressed = true
+                        try {
+                            awaitRelease()
+                        } finally {
+                            isPressed = false
+                        }
+                    }
+                )
+            }
     ) {
-        // Gambar utama
+        // --- ISI CARD SAMA PERSIS ---
         Image(
             painter = painterResource(id = R.drawable.profile),
             contentDescription = "Mood Senin Big",
@@ -121,7 +155,7 @@ fun ForYouBigCardContent(
                     contentDescription = "More",
                     modifier = Modifier
                         .size(22.dp)
-                        .clickable { onMoreClick() } // << ini dia!
+                        .clickable { onMoreClick() } // Boleh kosong aja!
                 )
             }
             // Section artis di kiri bawah
