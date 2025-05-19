@@ -56,7 +56,13 @@ dependencies {
     implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
     implementation("androidx.window:window:1.2.0")
     implementation(libs.androidx.media3.common.ktx)
+    implementation(libs.androidx.navigation.runtime.android)
     debugImplementation("androidx.compose.ui:ui-tooling")
+    implementation("com.google.accompanist:accompanist-navigation-animation:0.34.0")
+    implementation ("com.google.accompanist:accompanist-placeholder-material:0.34.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+
+
 
     // Navigation Compose
     implementation("androidx.navigation:navigation-compose:2.7.7")
