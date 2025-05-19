@@ -76,7 +76,7 @@ fun HomePages(navController: NavController) {
 
             // Title & Big Card dipisah jadi widget!
             ForYouTitle()
-            ForYouBigCard(isLoading = isLoading)
+            ForYouBigCardWithMiniSheet(isLoading = isLoading)
             Spacer(modifier = Modifier.height(28.dp))
         }
     }
