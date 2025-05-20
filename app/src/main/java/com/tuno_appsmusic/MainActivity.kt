@@ -14,7 +14,7 @@ import com.tuno_appsmusic.features.auth.presentation.pages.LoginPage
 import com.tuno_appsmusic.features.home.presentation.pages.HomePages
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.runtime.CompositionLocalProvider
-
+import com.tuno_appsmusic.features.playingPage.presentation.pages.PlayingPages
 
 class MainActivity : ComponentActivity() {
     @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
@@ -41,10 +41,13 @@ class MainActivity : ComponentActivity() {
                         composable("homePages") {
                             HomePages(navController)
                         }
+                        // --- Route playing TANPA parameter ---
+                        composable("playing") {
+                            PlayingPages(navController)
+                        }
                     }
                 }
             }
         }
     }
 }
-

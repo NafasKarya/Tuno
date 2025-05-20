@@ -126,7 +126,7 @@ fun HomePages(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
                 AlbumCardGrid(albumCards = albumCards)
                 Spacer(modifier = Modifier.height(36.dp))
-                MoodSeninPlaylistSection(isLoading = isLoading)
+                MoodSeninPlaylistSection(isLoading = isLoading, navController = navController)
                 Spacer(modifier = Modifier.height(32.dp))
                 ForYouTitle()
                 // ========== UBAH DI SINI ==========

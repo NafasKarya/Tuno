@@ -1,8 +1,10 @@
 package com.tuno_appsmusic.features.home.presentation.widgets
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -10,16 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.navigation.NavController
 import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.tuno_appsmusic.R
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
+import com.tuno_appsmusic.R
 
 data class MoodPlaylistDummy(
     val subtitle: String,
@@ -39,7 +42,8 @@ val dummyPlaylistList = listOf(
 
 @Composable
 fun MoodSeninPlaylistSection(
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
@@ -70,7 +74,12 @@ fun MoodSeninPlaylistSection(
                 MoodSeninPlaylistCard(
                     subtitle = dummy?.subtitle.orEmpty(),
                     imageRes = dummy?.imageRes ?: R.drawable.profile,
-                    isLoading = isLoading
+                    isLoading = isLoading,
+                    onClick = {
+                        if (!isLoading) {
+                            navController.navigate("playing") // <-- Hanya "playing"
+                        }
+                    }
                 )
                 if (idx < 6) Spacer(modifier = Modifier.width(18.dp))
             }
@@ -82,12 +91,14 @@ fun MoodSeninPlaylistSection(
 fun MoodSeninPlaylistCard(
     subtitle: String = "",
     imageRes: Int = R.drawable.profile,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    onClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
             .width(180.dp)
-            .wrapContentHeight(),
+            .wrapContentHeight()
+            .clickable(enabled = !isLoading, onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
