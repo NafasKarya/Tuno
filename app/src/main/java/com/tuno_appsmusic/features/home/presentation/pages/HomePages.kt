@@ -1,5 +1,6 @@
 package com.tuno_appsmusic.features.home.presentation.pages
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,7 +10,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -40,6 +40,11 @@ fun HomePages(navController: NavController) {
     )
     val coroutineScope = rememberCoroutineScope()
     var showSheet by remember { mutableStateOf(false) }
+
+    // --- Tambahkan state untuk ekspansi card ---
+    var cardExpanded by remember { mutableStateOf(false) }
+    // State untuk bottom nav
+    var selectedNavIndex by remember { mutableStateOf(0) }
 
     // Simulasi loading
     LaunchedEffect(Unit) {
@@ -109,7 +114,7 @@ fun HomePages(navController: NavController) {
                         rememberScrollState(),
                         enabled = sheetState.bottomSheetState.isCollapsed // Nonaktifkan scroll jika sheet buka
                     )
-                    .padding(bottom = 24.dp)
+                    .padding(bottom = 32.dp) // ruang buat navbar
             ) {
                 HomeHeader(profileImageRes = R.drawable.profile)
                 Spacer(modifier = Modifier.height(12.dp))
@@ -124,14 +129,15 @@ fun HomePages(navController: NavController) {
                 MoodSeninPlaylistSection(isLoading = isLoading)
                 Spacer(modifier = Modifier.height(32.dp))
                 ForYouTitle()
+                // ========== UBAH DI SINI ==========
                 ForYouBigCardContent(
                     isLoading = isLoading,
                     title = "Hindia - Rumah ke Rumah",
                     artistName = "Hindia",
-                    artistDesc = "...",
+                    artistDesc = "Evaluasi, Cincin, Evakuasi, Kita Kesana, Secukupnya, Membasuh, Dehidrasi, Untuk Apa / Untuk Apa?, Rumah ke Rumah, Perkara Tubuh, Belum Tidur, Jam Makan Siang, Membasuh, etc",
                     artistAvatar = R.drawable.profile,
-                    expanded = false,
-                    onExpandToggle = { },
+                    expanded = cardExpanded,
+                    onExpandToggle = { cardExpanded = !cardExpanded }, // <--- state toggle!
                     onMoreClick = { },
                     onImageLongPress = { showSheet = true },
                     modifier = Modifier
@@ -139,14 +145,28 @@ fun HomePages(navController: NavController) {
                 Spacer(modifier = Modifier.height(28.dp))
             }
 
-            // OVERLAY TRANSPARENT, AGAR AREA DI LUAR SHEET TIDAK BISA DIINTERAKSI SAAT SHEET TERBUKA
-            if (!sheetState.bottomSheetState.isCollapsed) {
+            // ANIMATED OVERLAY (fade in/out, bisa di-drag untuk dismiss sheet)
+            val targetAlpha = if (!sheetState.bottomSheetState.isCollapsed) 0.7f else 0f
+            val animatedAlpha by animateFloatAsState(
+                targetValue = targetAlpha,
+                label = "overlayAlphaAnim"
+            )
+            if (animatedAlpha > 0f) {
                 Box(
                     Modifier
                         .fillMaxSize()
-                        .background(Color.Transparent)
+                        .background(Color.Black.copy(alpha = animatedAlpha))
                 )
             }
+
+            // **BottomNavBar sebagai overlay bawah**
+            BottomNavBar(
+                selectedIndex = selectedNavIndex,
+                onItemSelected = { selectedNavIndex = it },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                // .padding(bottom = 20.dp) // <-- HAPUS INI!
+            )
         }
     }
 }
